@@ -88,14 +88,17 @@ async def stats_cmd(message: Message):
         return
     text = 'Top 3 numbers of all time:\n'
     for num, percent in stats:
-        text += f'{num}: {percent}%\n'
+        text += f'{num if num != 37 else "00"}: {percent}%\n'
     await message.answer(text)
 
 @dp.message()
 async def number_handler(message: Message):
-    if not (message.text and message.text.strip().isdigit()):
+    num = message.text
+    if num == "00":
+        num = "37"
+    if not (num and num.strip().isdigit()):
         return
-    num = int(message.text.strip())
+    num = int(num.strip())
     user_id = message.from_user.id
     data = load_data(user_id)
     data['lists'][data['current']].append(num)
@@ -106,7 +109,7 @@ async def number_handler(message: Message):
     else:
         text = 'Top 3 numbers that come after this number:\n'
         for n, percent in next_stats:
-            text += f'{n}: {percent}%\n'
+            text += f'{n if n != 37 else "00"}: {percent}%\n'
     await message.answer(text)
 
 async def main():

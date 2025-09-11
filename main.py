@@ -14,6 +14,8 @@ API_TOKEN = config['API_TOKEN']
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
+list1 = [0, 28, 9, 26, 30, 11, 7, 20, 32, 17, 5, 22, 34, 15, 3, 24, 36, 13, 1, 37, 27, 10, 25, 29, 12, 8, 19, 31, 18, 6, 21, 33, 16, 4, 23, 35, 14, 2]
+
 def get_data_file(user_id):
     return f'numbers_data_{user_id}.json'
 
@@ -103,13 +105,15 @@ async def number_handler(message: Message):
     data = load_data(user_id)
     data['lists'][data['current']].append(num)
     save_data(user_id, data)
-    next_stats = get_next_stats(data, num)
-    if not next_stats:
-        text = 'There are no numbers after this one yet.'
+    if num in list1:
+        idx = list1.index(num)
+        before = list1[idx - 1] if idx > 0 else list1[-1]
+        after = list1[idx + 1] if idx < len(list1) - 1 else list1[0]
+        text = f'{before if before != 37 else "00"}\n'
+        text += f'{num if num != 37 else "00"}\n'
+        text += f'{after if after != 37 else "00"}'
     else:
-        text = 'Top 3 numbers that come after this number:\n'
-        for n, percent in next_stats:
-            text += f'{n if n != 37 else "00"}: {percent}%\n'
+        text = 'The number was not found in the main list.'
     await message.answer(text)
 
 async def main():

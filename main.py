@@ -105,15 +105,25 @@ async def number_handler(message: Message):
     data = load_data(user_id)
     data['lists'][data['current']].append(num)
     save_data(user_id, data)
-    if num in list1:
-        idx = list1.index(num)
-        before = list1[idx - 1] if idx > 0 else list1[-1]
-        after = list1[idx + 1] if idx < len(list1) - 1 else list1[0]
-        text = f'{before if before != 37 else "00"}\n'
-        text += f'{num if num != 37 else "00"}\n'
-        text += f'{after if after != 37 else "00"}'
+    next_numbers = []
+    for lst in data['lists']:
+        for i in range(len(lst) - 1):
+            if lst[i] == num:
+                next_numbers.append(lst[i + 1])
+    if next_numbers:
+        counter = Counter(next_numbers)
+        most_common_num, _ = counter.most_common(1)[0]
+        if most_common_num in list1:
+            idx = list1.index(most_common_num)
+            before = list1[idx - 1] if idx > 0 else list1[-1]
+            after = list1[idx + 1] if idx < len(list1) - 1 else list1[0]
+            text = f'{before if before != 37 else "00"}\n'
+            text += f'{most_common_num if most_common_num != 37 else "00"}\n'
+            text += f'{after if after != 37 else "00"}'
+        else:
+            text = f'Not in the main list'
     else:
-        text = 'The number was not found in the main list.'
+        text = 'There is no data on the following numbers after that.'
     await message.answer(text)
 
 async def main():

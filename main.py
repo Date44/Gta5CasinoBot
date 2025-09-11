@@ -112,16 +112,18 @@ async def number_handler(message: Message):
                 next_numbers.append(lst[i + 1])
     if next_numbers:
         counter = Counter(next_numbers)
-        most_common_num, _ = counter.most_common(1)[0]
-        if most_common_num in list1:
-            idx = list1.index(most_common_num)
-            before = list1[idx - 1] if idx > 0 else list1[-1]
-            after = list1[idx + 1] if idx < len(list1) - 1 else list1[0]
-            text = f'{before if before != 37 else "00"}\n'
-            text += f'{most_common_num if most_common_num != 37 else "00"}\n'
-            text += f'{after if after != 37 else "00"}'
-        else:
-            text = f'Not in the main list'
+        top3 = counter.most_common(3)
+        text = 'TOP 3 numbers that go after this number:\n'
+        for n, count in top3:
+            if n in list1:
+                idx = list1.index(n)
+                before = list1[idx - 1] if idx > 0 else list1[-1]
+                after = list1[idx + 1] if idx < len(list1) - 1 else list1[0]
+                text += f'{before if before != 37 else "00"} '
+                text += f'{n if n != 37 else "00"} '
+                text += f'{after if after != 37 else "00"} ({count} раз)\n'
+            else:
+                text += f'{n if n != 37 else "00"} (not in the main list) ({count} once)\n'
     else:
         text = 'There is no data on the following numbers after that.'
     await message.answer(text)
